@@ -1,0 +1,19 @@
+---
+title: "data_import"
+author: "Pei Yang Hsieh"
+date: "September 18, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+## Import FAS csv files
+
+```{r import}
+
+litters_data = read_csv(file = "./data_import_examples/FAS_litters.csv")
+
+```
+
