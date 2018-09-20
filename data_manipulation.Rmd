@@ -1,0 +1,84 @@
+---
+title: "data_manipulation"
+author: "Pei Yang Hsieh"
+date: "September 20, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+## Import FAS csv files
+
+```{r import}
+litters_data = read_csv(file = "./data_import_examples/FAS_litters.csv")
+litters_data = janitor::clean_names(litters_data)
+
+pups_data = read_csv(file = "./data_import_examples/FAS_pups.csv")
+pups_data = janitor::clean_names(pups_data)
+```
+
+## Select variables
+
+
+```{r select}
+
+#You can specify the columns you want to keep by naming all of them
+select(litters_data, group, litter_number, gd0_weight, pups_born_alive)
+select(pups_data, litter_number, sex, pd_ears)
+
+select(litters_data, litter_number, gd0_weight, pups_survive)
+
+#select range 
+select(litters_data, group:gd_of_birth)
+
+#select columns to remove
+select(litters_data, -pups_survive)
+```
+## Rename Variables
+
+```{r rename}
+
+select(litters_data, GROUP = group, LiTtEr_NuMbEr = litter_number)
+
+#If all you want to do is rename something, you can use rename instead of select. This will rename the variables you care about, and keep everything else:
+rename(litters_data, GROUP = group, LiTtEr_NuMbEr = litter_number)
+```
+## Select Helper
+
+```{r select_helper}
+#everything reorganizes. This puts litter_number as first column, followed by group column.
+select(litters_data, litter_number, group, everything())
+#selects all variables thta start with "gd"
+select(litters_data, starts_with("gd"))
+```
+## Filter observations
+
+```{r filter}
+
+filter(litters_data, gd_of_birth == 20)
+
+filter(litters_data, pups_born_alive >= 2)
+
+filter(litters_data, pups_survive != 4)
+
+
+#take all true and turn into false and vice versa
+filter(litters_data, !(pups_survive == 4))
+
+filter(litters_data, group %in% c("Con7", "Con8"))
+
+filter(litters_data, group == "Con7" & gd_of_birth == 20)
+
+
+#is.na asks if a value is missing.
+filter(litters_data, !is.na(gd0_weight))
+
+filter(pups_data, sex == 1)
+
+#Filter to include only pups with PD walk less than 11 and sex 2
+filter(pups_data, pd_walk < 11 & sex == 2 )
+
+```
+
