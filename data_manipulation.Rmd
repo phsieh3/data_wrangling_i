@@ -81,4 +81,27 @@ filter(pups_data, sex == 1)
 filter(pups_data, pd_walk < 11 & sex == 2 )
 
 ```
+## Mutate
+
+```{r mutate}
+#create new variable called wt_gain based on existing variables. Then overrite existing group variable to make everything lower case. New variable wt_gain gets tacked on as the last column.
+mutate(litters_data,
+  wt_gain = gd18_weight - gd0_weight,
+  group = tolower(group)
+)
+
+mutate(pups_data,
+  pd_pivot_7_less = pd_pivot - 7,
+  pd_summed = pd_ears + pd_eyes + pd_pivot + pd_walk
+)
+
+```
+## Arrange Data
+
+```{r arrange}
+#You can arrange the rows in your data according to the values in one or more columns:
+head(arrange(litters_data, group, pups_born_alive), 10)
+```
+
+
 
