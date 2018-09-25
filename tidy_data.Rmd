@@ -60,4 +60,78 @@ litters_data =
 
 litters_data
 ```
+```{r learning_assessment}
+
+#gather step replaces both gd_weight columns with gest_day and weight columns. Gest_day column is character that indicates gd_0 or gd_18. weight column is their corresponding weight. 
+#mutate step just recodes gd_0 and gd_18 from characters to numerics 0 and 18
+litters_data_gd = 
+  read_csv("./data_import_examples/FAS_litters.csv", col_types = "ccddiiii") %>% 
+  janitor::clean_names() %>%
+  select(litter_number, ends_with("weight")) %>%
+  gather(key = "gest_day", value = "weight", gd0_weight:gd18_weight) %>%
+  mutate(gest_day = recode(gest_day, "gd0_weight" = 0, "gd18_weight" = 18)) %>%
+  arrange(litter_number)
+
+litters_data_gd
+```
+# Spread
+
+```{r spread}
+#spread is opposite of gather
+analysis_result = tibble(
+  group = c("treatment", "treatment", "placebo", "placebo"),
+  time = c("pre", "post", "pre", "post"),
+  mean = c(4, 8, 3.5, 4)
+)
+
+analysis_result
+
+spread(analysis_result, key = time, value = mean)
+# can use knitr::kable() to create a nice looking table in html file
+```
+# Binding
+
+```{r bind}
+#They are in same excel file but this reads them in as 3 separate tables.
+
+fellowship_ring = readxl::read_excel("./data_import_examples/LotR_Words.xlsx", range = "B3:D6") %>%
+  mutate(movie = "fellowship_ring")
+
+two_towers = readxl::read_excel("./data_import_examples/LotR_Words.xlsx", range = "F3:H6") %>%
+  mutate(movie = "two_towers")
+
+return_king = readxl::read_excel("./data_import_examples/LotR_Words.xlsx", range = "J3:L6") %>%
+  mutate(movie = "return_king")
+
+#bind_rows just stacks all three tables together into 1 huge table.
+
+lotr_tidy = bind_rows(fellowship_ring, two_towers, return_king) %>%
+  janitor::clean_names() %>%
+  gather(key = sex, value = words, female:male) %>%
+  mutate(race = tolower(race)) %>% 
+  select(movie, everything()) 
+
+lotr_tidy
+```
+# Join
+
+```{r join}
+
+pup_data = read_csv("./data_import_examples/FAS_pups.csv", col_types = "ciiiii") %>%
+  janitor::clean_names() %>%
+  mutate(sex = recode(sex, `1` = "male", `2` = "female")) 
+
+litter_data = read_csv("./data_import_examples/FAS_litters.csv", col_types = "ccddiiii") %>%
+  janitor::clean_names() %>%
+  select(-pups_survive) %>%
+  mutate(
+    wt_gain = gd18_weight - gd0_weight,
+    group = tolower(group))
+
+#The data tables in FAS_pups.csv and FAS_litters.csv are related through the Litter Number variable. The former contains data unique to each pup, and the latter contains data unique to each litter. We can combine these using a left join of litter data into pup data; doing so retains data on each pup and adds data in new columns.
+
+FAS_data = left_join(pup_data, litter_data, by = "litter_number")
+FAS_data
+```
+
 
